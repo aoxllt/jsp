@@ -1,0 +1,64 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: zn
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>
+<%@ page import="java.sql.*" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>封号处理</title>
+</head>
+<body>
+<%
+    String url = "jdbc:mysql://localhost:3306/jsp?user=root&password=zbq040131";
+    Connection conn = null;
+    PreparedStatement stmt = null;
+
+    String action = request.getParameter("action");
+    String username = request.getParameter("username");
+
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        conn = DriverManager.getConnection(url);
+
+        if ("banUser".equals(action)) {
+            // 执行封号操作
+            String sqlUpdate = "UPDATE user SET user_status = 1 WHERE username = ?";
+            stmt = conn.prepareStatement(sqlUpdate);
+            stmt.setString(1, username);
+            stmt.executeUpdate();
+            out.println("<script>alert('用户封号成功！'); window.location.href='userManage.jsp';</script>");
+        } else if ("unbanUser".equals(action)) {
+            // 执行解封操作
+            String sqlUpdate = "UPDATE user SET user_status = 0 WHERE username = ?";
+            stmt = conn.prepareStatement(sqlUpdate);
+            stmt.setString(1, username);
+            stmt.executeUpdate();
+            out.println("<script>alert('用户解封成功！'); window.location.href='userManage.jsp';</script>");
+        } else {
+            out.println("<script>alert('无效的操作！'); window.location.href='userManage.jsp';</script>");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        out.println("<script>alert('操作失败，请稍后重试。'); window.location.href='userManage.jsp';</script>");
+    } finally {
+        try {
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+%>
+</body>
+</html>
